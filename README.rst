@@ -10,7 +10,7 @@ Kent mixture model for scikit-learn
 
 This scikit-learn fork contains a Kent mixture model for fitting mixture
 models of Kent (aka Fisher-Bingham) distributions. This distribution
-is the 3d spherical analogue of Gaussian distribution.
+is the 3d spherical analogue of a nonisotropic Gaussian distribution.
 
 scikit-learn
 ============
