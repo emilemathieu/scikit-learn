@@ -12,6 +12,9 @@ This scikit-learn fork contains a Kent mixture model for fitting mixture
 models of Kent (aka Fisher-Bingham) distributions. This distribution
 is the 3d spherical analogue of a nonisotropic Gaussian distribution.
 
+To try it out, run examples/mixture/plot_kmm.py. The estimator class
+itself can be found in sklearn/mixture/kmm.py.
+
 scikit-learn
 ============
 
