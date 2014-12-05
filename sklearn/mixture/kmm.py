@@ -406,7 +406,7 @@ class KentMixtureModel(BaseEstimator):
                 # Maximization step
                 try:
                     self._do_mstep(X, self.Gamma_, responsibilities, self.min_covar)
-                except ValueError, e:
+                except ValueError as e:
                     print (e)
                     log_likelihood.append(-np.infty)
                     break
