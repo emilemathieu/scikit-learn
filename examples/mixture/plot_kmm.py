@@ -83,17 +83,17 @@ if __name__ == "__main__":
     np.set_printoptions(precision=3)
     np.set_printoptions(suppress=True)
 
-    print "CENTERS"
-    print [centers[i,:] / np.linalg.norm(centers[i,:]) for i in range(centers.shape[0])]
+    print ("CENTERS")
+    print ([centers[i,:] / np.linalg.norm(centers[i,:]) for i in range(centers.shape[0])])
 
-    print "KMM: responsibilities"
-    print kmm_responsibilities.T
-    print "kappa: %s,\nbeta: %s,\nG:\n %s\nS:\n%s" % tuple(map(str,(klf.kappa_, klf.beta_, klf.G_, klf.S_)))
-    print "weights: %s" % str(klf.weights_)
+    print ( "KMM: responsibilities" )
+    print ( kmm_responsibilities.T )
+    print ( "kappa: %s,\nbeta: %s,\nG:\n %s\nS:\n%s" % tuple(map(str,(klf.kappa_, klf.beta_, klf.G_, klf.S_))) )
+    print ( "weights: %s" % str(klf.weights_) )
 
-    print "GMM: responsibilities"
-    print gmm_responsibilities.T
-    print "Mean: %s,\nCov:\n%s" % tuple(map(str, (glf.means_, glf.covars_)))
+    print ( "GMM: responsibilities" )
+    print ( gmm_responsibilities.T )
+    print ( "Mean: %s,\nCov:\n%s" % tuple(map(str, (glf.means_, glf.covars_))) )
 
     # ------------------------------------
     # visualize
@@ -102,27 +102,27 @@ if __name__ == "__main__":
         ("Kent", klf, kmm_lpr, kmm_responsibilities, klf.G_[:, :, 0]),
         ("Gaussian", glf, gmm_lpr, gmm_responsibilities, glf.means_) ]:
 
-      print "==============================="
-      print name
+      print ( "===============================" )
+      print ( name )
 
       fig = plt.figure(figsize=(10,10))
       ax = fig.add_subplot(1,1,1, projection='3d')
       plt.title(name)
 
-      print "Log-likelihood"
-      print np.sum(lpr)
+      print ( "Log-likelihood" )
+      print ( np.sum(lpr) )
 
       X_lik = np.exp(lpr)
       X_lik /= np.max(X_lik)
-      print "Likelihoods (normalized): "
-      print X_lik
+      print ( "Likelihoods (normalized): " )
+      print ( X_lik )
 
       cluster_mapping = {}
       for k in range(n_components):
         G = means[k]
 
-        print "Mean vectors"
-        print G
+        print ( "Mean vectors" )
+        print ( G )
       
         # find matching real cluster
         k_true = np.argmin(1 - np.dot(centers, G))
@@ -151,7 +151,7 @@ if __name__ == "__main__":
           a = Arrow3D([0, X[i:i+1,0]], [0, X[i:i+1,1]], [0, X[i:i+1,2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="gray")
           ax.add_artist(a)
           ax.text(X[i:i+1,0], X[i:i+1,1], X[i:i+1,2]+0.1, "%d" % i, color="gray")
-      print "Misclassified: %d " % misclassified
+      print ( "Misclassified: %d " % misclassified )
 
       ax.set_xlim3d(-1,1)
       ax.set_ylim3d(-1,1)
