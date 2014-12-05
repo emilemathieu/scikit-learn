@@ -347,7 +347,7 @@ class KentMixtureModel(BaseEstimator):
 
         self.Gamma_ = to_spherical_coords(X)
         if self.verbose_:
-          print "Gamma:\n%s" % str(self.Gamma_)
+          print ("Gamma:\n%s" % str(self.Gamma_))
                 
         max_log_prob = - np.infty
 
@@ -373,10 +373,10 @@ class KentMixtureModel(BaseEstimator):
             if self.verbose_:
                 np.set_printoptions(suppress=True)
                 np.set_printoptions(precision=3)
-                print "kappa: " + str(self.kappa_)
-                print "beta: " + str(self.beta_)
-                print "G: " + str(self.G_)
-                print "S: " + str(self.S_)
+                print ("kappa: " + str(self.kappa_))
+                print ("beta: " + str(self.beta_))
+                print ("G: " + str(self.G_))
+                print ("S: " + str(self.S_))
             
             log_likelihood = []
             # reset self.converged_ to False
@@ -384,8 +384,8 @@ class KentMixtureModel(BaseEstimator):
             
             for i in xrange(self.n_iter):
                 if self.verbose_:
-                    print "----------------------"
-                    print "iteration: %d" % i
+                    print ("----------------------")
+                    print ("iteration: %d" % i)
                 
                 # Expectation step
                 curr_log_likelihood, responsibilities = self.score_samples(X)
@@ -400,20 +400,20 @@ class KentMixtureModel(BaseEstimator):
                 if self.verbose_:
                     np.set_printoptions(precision=3)
                     np.set_printoptions(suppress=True)
-                    print "curr_log_likelihood: %s" % str(curr_log_likelihood)
-                    print "responsibilities: %s" % str(responsibilities.T)
+                    print ("curr_log_likelihood: %s" % str(curr_log_likelihood))
+                    print ("responsibilities: %s" % str(responsibilities.T))
 
                 # Maximization step
                 try:
                     self._do_mstep(X, self.Gamma_, responsibilities, self.min_covar)
                 except ValueError, e:
-                    print e
+                    print (e)
                     log_likelihood.append(-np.infty)
                     break
                     
                 if self.verbose_:
                     np.set_printoptions(precision=3)
-                    print "new means: %s" % str([ self.G_[x,:,0] for x in range(self.G_.shape[0]) ])
+                    print ("new means: %s" % str([ self.G_[x,:,0] for x in range(self.G_.shape[0]) ]))
 
             if self.n_iter:
                 if log_likelihood[-1] > max_log_prob:
@@ -425,10 +425,10 @@ class KentMixtureModel(BaseEstimator):
                                    'beta': self.beta_,
                                    }
                     if self.verbose_:
-                        print "n_iter %d has loglikelihood: %f" % (__n_init, max_log_prob) 
+                        print ("n_iter %d has loglikelihood: %f" % (__n_init, max_log_prob) )
                 else:
                     if self.verbose_:
-                        print "n_iter %d has loglikelihood: %f" % (__n_init, log_likelihood[-1]) 
+                        print ("n_iter %d has loglikelihood: %f" % (__n_init, log_likelihood[-1]) )
 
         # check the existence of an init param that was not subject to
         # likelihood computation issue.
@@ -474,7 +474,7 @@ class KentMixtureModel(BaseEstimator):
 
             self.gamma_[i,:] = average_spherical_coords (Gamma, responsibilities[:,i])            
             if self.verbose_:
-                print "gamma: %s / %s" % (str(self.gamma_[i,:]), str(to_cartesian_coords(self.gamma_[i,:])))
+                print ("gamma: %s / %s" % (str(self.gamma_[i,:]), str(to_cartesian_coords(self.gamma_[i,:]))))
             
             self.R_[i] = np.linalg.norm( np.average(X, 0, responsibilities[:,i]) )
 
@@ -510,9 +510,9 @@ class KentMixtureModel(BaseEstimator):
             self.beta_[i] = 0.5 * (1./(2.*(1.-self.R_[i]) - W) - 1./(2*(1.-self.R_[i]) + W))
 
             if self.verbose_:
-                print "k: %d" % i
-                print "R: " + str(self.R_[i])
-                print "W: " + str(W)
+                print ("k: %d" % i)
+                print ("R: " + str(self.R_[i]))
+                print ("W: " + str(W))
 
             if W < self.eps:
                 # singularity! this means this cluster has collapsed
