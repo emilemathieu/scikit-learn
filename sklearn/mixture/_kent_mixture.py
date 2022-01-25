@@ -91,7 +91,7 @@ def log_kent_density(X, Gs, dispers, kappas, betas):
     
     return lpr.T
 
-class KentMixtureModel(BaseEstimator):
+class KentMixture(BaseEstimator):
     """Kent Mixture Model (also known as Fisher-Bingham Mixture Model)
 
     Representation of a Kent mixture model probability distribution.
@@ -309,7 +309,7 @@ class KentMixtureModel(BaseEstimator):
         return responsibilities
 
     def sample(self, n_samples=1, random_state=None):
-        raise NotImplementedError("KentMixtureModel.sample is not implemented" )
+        raise NotImplementedError("KentMixture.sample is not implemented" )
         
     def fit(self, X):
         """Estimate model parameters with the expectation-maximization

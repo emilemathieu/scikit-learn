@@ -1,5 +1,5 @@
 """
-The example shows the usage of the KentMixtureModel.
+The example shows the usage of the KentMixture.
 
 It shows the performance of the Kent mixture model in comparison
 to a Gaussian mixture model on synthetic data.
@@ -13,8 +13,8 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 
-from sklearn.mixture import GMM, KentMixtureModel
-from sklearn.mixture.kmm import to_spherical_coords, to_cartesian_coords
+from sklearn.mixture import GaussianMixture, KentMixture
+from sklearn.mixture._kent_mixture import to_spherical_coords, to_cartesian_coords
 
 class Arrow3D(FancyArrowPatch):
     def __init__(self, xs, ys, zs, *args, **kwargs):
@@ -68,13 +68,13 @@ if __name__ == "__main__":
 
     # ------------------------------------
     # fit Kent mixture model
-    klf = KentMixtureModel(n_components=n_components, n_iter=iterations, n_init=initializations)
+    klf = KentMixture(n_components=n_components, n_iter=iterations, n_init=initializations)
     klf.fit(X)
     kmm_lpr, kmm_responsibilities = klf.score_samples(X)
 
     # ------------------------------------
-    # fit GMM
-    glf = GMM(n_components=n_components, n_iter=iterations, n_init=initializations, covariance_type='full')
+    # fit GaussianMixture
+    glf = GaussianMixture(n_components=n_components, n_iter=iterations, n_init=initializations, covariance_type='full')
     glf.fit(X)
     gmm_lpr, gmm_responsibilities = glf.score_samples(X)
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     print ( "kappa: %s,\nbeta: %s,\nG:\n %s\nS:\n%s" % tuple(map(str,(klf.kappa_, klf.beta_, klf.G_, klf.S_))) )
     print ( "weights: %s" % str(klf.weights_) )
 
-    print ( "GMM: responsibilities" )
+    print ( "GaussianMixture: responsibilities" )
     print ( gmm_responsibilities.T )
     print ( "Mean: %s,\nCov:\n%s" % tuple(map(str, (glf.means_, glf.covars_))) )
 
