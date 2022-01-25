@@ -8,7 +8,7 @@ graph is to compute the principal eigenvector of the adjacency matrix
 so as to assign to each vertex the values of the components of the first
 eigenvector as a centrality score:
 
-    http://en.wikipedia.org/wiki/Eigenvector_centrality
+    https://en.wikipedia.org/wiki/Eigenvector_centrality
 
 On the graph of webpages and links those values are called the PageRank
 scores by Google.
@@ -20,19 +20,18 @@ this eigenvector centrality.
 The traditional way to compute the principal eigenvector is to use the
 power iteration method:
 
-    http://en.wikipedia.org/wiki/Power_iteration
+    https://en.wikipedia.org/wiki/Power_iteration
 
 Here the computation is achieved thanks to Martinsson's Randomized SVD
-algorithm implemented in the scikit.
+algorithm implemented in scikit-learn.
 
 The graph data is fetched from the DBpedia dumps. DBpedia is an extraction
 of the latent structured data of the Wikipedia content.
+
 """
 
 # Author: Olivier Grisel <olivier.grisel@ensta.org>
 # License: BSD 3 clause
-
-from __future__ import print_function
 
 from bz2 import BZ2File
 import os
@@ -45,12 +44,10 @@ import numpy as np
 from scipy import sparse
 
 from sklearn.decomposition import randomized_svd
-from sklearn.externals.joblib import Memory
+from urllib.request import urlopen
 
 
-print(__doc__)
-
-###############################################################################
+# #############################################################################
 # Where to download the data, if not already on disk
 redirects_url = "http://downloads.dbpedia.org/3.5.1/en/redirects_en.nt.bz2"
 redirects_filename = redirects_url.rsplit("/", 1)[1]
@@ -65,17 +62,14 @@ resources = [
 
 for url, filename in resources:
     if not os.path.exists(filename):
-        import urllib
         print("Downloading data from '%s', please wait..." % url)
-        opener = urllib.urlopen(url)
-        open(filename, 'wb').write(opener.read())
+        opener = urlopen(url)
+        open(filename, "wb").write(opener.read())
         print()
 
 
-###############################################################################
+# #############################################################################
 # Loading the redirect files
-
-memory = Memory(cachedir=".")
 
 
 def index(redirects, index_map, k):
@@ -111,7 +105,7 @@ def get_redirects(redirects_filename):
     for l, source in enumerate(redirects.keys()):
         transitive_target = None
         target = redirects[source]
-        seen = set([source])
+        seen = {source}
         while True:
             transitive_target = target
             target = redirects.get(target)
@@ -125,8 +119,6 @@ def get_redirects(redirects_filename):
     return redirects
 
 
-# disabling joblib as the pickling of large dicts seems much too slow
-#@memory.cache
 def get_adjacency_matrix(redirects_filename, page_links_filename, limit=None):
     """Extract the adjacency graph as a scipy sparse matrix
 
@@ -170,15 +162,16 @@ def get_adjacency_matrix(redirects_filename, page_links_filename, limit=None):
 
 # stop after 5M links to make it possible to work in RAM
 X, redirects, index_map = get_adjacency_matrix(
-    redirects_filename, page_links_filename, limit=5000000)
-names = dict((i, name) for name, i in index_map.iteritems())
+    redirects_filename, page_links_filename, limit=5000000
+)
+names = {i: name for name, i in index_map.items()}
 
 print("Computing the principal singular vectors using randomized_svd")
 t0 = time()
 U, s, V = randomized_svd(X, 5, n_iter=3)
 print("done in %0.3fs" % (time() - t0))
 
-# print the names of the wikipedia related strongest compenents of the the
+# print the names of the wikipedia related strongest components of the
 # principal singular vector which should be similar to the highest eigenvector
 print("Top wikipedia pages according to principal singular vectors")
 pprint([names[i] for i in np.abs(U.T[0]).argsort()[-10:]])
@@ -202,15 +195,17 @@ def centrality_scores(X, alpha=0.85, max_iter=100, tol=1e-10):
 
     print("Normalizing the graph")
     for i in incoming_counts.nonzero()[0]:
-        X.data[X.indptr[i]:X.indptr[i + 1]] *= 1.0 / incoming_counts[i]
-    dangle = np.asarray(np.where(X.sum(axis=1) == 0, 1.0 / n, 0)).ravel()
+        X.data[X.indptr[i] : X.indptr[i + 1]] *= 1.0 / incoming_counts[i]
+    dangle = np.asarray(np.where(np.isclose(X.sum(axis=1), 0), 1.0 / n, 0)).ravel()
 
-    scores = np.ones(n, dtype=np.float32) / n  # initial guess
+    scores = np.full(n, 1.0 / n, dtype=np.float32)  # initial guess
     for i in range(max_iter):
         print("power iteration #%d" % i)
         prev_scores = scores
-        scores = (alpha * (scores * X + np.dot(dangle, prev_scores))
-                  + (1 - alpha) * prev_scores.sum() / n)
+        scores = (
+            alpha * (scores * X + np.dot(dangle, prev_scores))
+            + (1 - alpha) * prev_scores.sum() / n
+        )
         # check convergence: normalized l_inf norm
         scores_max = np.abs(scores).max()
         if scores_max == 0.0:
@@ -222,8 +217,9 @@ def centrality_scores(X, alpha=0.85, max_iter=100, tol=1e-10):
 
     return scores
 
+
 print("Computing principal eigenvector score using a power iteration method")
 t0 = time()
-scores = centrality_scores(X, max_iter=100, tol=1e-10)
+scores = centrality_scores(X, max_iter=100)
 print("done in %0.3fs" % (time() - t0))
 pprint([names[i] for i in np.abs(scores).argsort()[-10:]])

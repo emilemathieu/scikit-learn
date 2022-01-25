@@ -1,5 +1,5 @@
 """ Module to give helpful messages to the user that did not
-compile the scikit properly.
+compile scikit-learn properly.
 """
 import os
 
@@ -18,17 +18,18 @@ def raise_build_error(e):
     # directory to help debugging on the mailing list.
     local_dir = os.path.split(__file__)[0]
     msg = STANDARD_MSG
-    if local_dir == "sklearn/check_build":
+    if local_dir == "sklearn/__check_build":
         # Picking up the local install: this will work only if the
         # install is an 'inplace build'
         msg = INPLACE_MSG
     dir_content = list()
     for i, filename in enumerate(os.listdir(local_dir)):
-        if ((i + 1) % 3):
+        if (i + 1) % 3:
             dir_content.append(filename.ljust(26))
         else:
-            dir_content.append(filename + '\n')
-    raise ImportError("""%s
+            dir_content.append(filename + "\n")
+    raise ImportError(
+        """%s
 ___________________________________________________________________________
 Contents of %s:
 %s
@@ -38,9 +39,12 @@ It seems that scikit-learn has not been built correctly.
 If you have installed scikit-learn from source, please do not forget
 to build the package before using it: run `python setup.py install` or
 `make` in the source directory.
-%s""" % (e, local_dir, ''.join(dir_content).strip(), msg))
+%s"""
+        % (e, local_dir, "".join(dir_content).strip(), msg)
+    )
+
 
 try:
-    from ._check_build import check_build
+    from ._check_build import check_build  # noqa
 except ImportError as e:
     raise_build_error(e)

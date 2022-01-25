@@ -1,43 +1,70 @@
 """
 The :mod:`sklearn.preprocessing` module includes scaling, centering,
-normalization, binarization and imputation methods.
+normalization, binarization methods.
 """
 
-from .data import Binarizer
-from .data import KernelCenterer
-from .data import MinMaxScaler
-from .data import Normalizer
-from .data import StandardScaler
-from .data import add_dummy_feature
-from .data import binarize
-from .data import normalize
-from .data import scale
-from .data import OneHotEncoder
+from ._function_transformer import FunctionTransformer
 
-from .data import PolynomialFeatures
+from ._data import Binarizer
+from ._data import KernelCenterer
+from ._data import MinMaxScaler
+from ._data import MaxAbsScaler
+from ._data import Normalizer
+from ._data import RobustScaler
+from ._data import StandardScaler
+from ._data import QuantileTransformer
+from ._data import add_dummy_feature
+from ._data import binarize
+from ._data import normalize
+from ._data import scale
+from ._data import robust_scale
+from ._data import maxabs_scale
+from ._data import minmax_scale
+from ._data import quantile_transform
+from ._data import power_transform
+from ._data import PowerTransformer
 
-from .label import label_binarize
-from .label import LabelBinarizer
-from .label import LabelEncoder
-from .label import MultiLabelBinarizer
+from ._encoders import OneHotEncoder
+from ._encoders import OrdinalEncoder
 
-from .imputation import Imputer
+from ._label import label_binarize
+from ._label import LabelBinarizer
+from ._label import LabelEncoder
+from ._label import MultiLabelBinarizer
+
+from ._discretization import KBinsDiscretizer
+
+from ._polynomial import PolynomialFeatures
+from ._polynomial import SplineTransformer
+
 
 __all__ = [
-    'Binarizer',
-    'Imputer',
-    'KernelCenterer',
-    'LabelBinarizer',
-    'LabelEncoder',
-    'MultiLabelBinarizer',
-    'MinMaxScaler',
-    'Normalizer',
-    'OneHotEncoder',
-    'StandardScaler',
-    'add_dummy_feature',
-    'PolynomialFeatures',
-    'binarize',
-    'normalize',
-    'scale',
-    'label_binarize',
+    "Binarizer",
+    "FunctionTransformer",
+    "KBinsDiscretizer",
+    "KernelCenterer",
+    "LabelBinarizer",
+    "LabelEncoder",
+    "MultiLabelBinarizer",
+    "MinMaxScaler",
+    "MaxAbsScaler",
+    "QuantileTransformer",
+    "Normalizer",
+    "OneHotEncoder",
+    "OrdinalEncoder",
+    "PowerTransformer",
+    "RobustScaler",
+    "SplineTransformer",
+    "StandardScaler",
+    "add_dummy_feature",
+    "PolynomialFeatures",
+    "binarize",
+    "normalize",
+    "scale",
+    "robust_scale",
+    "maxabs_scale",
+    "minmax_scale",
+    "label_binarize",
+    "quantile_transform",
+    "power_transform",
 ]

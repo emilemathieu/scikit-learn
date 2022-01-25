@@ -1,11 +1,14 @@
-# simple makefile to simplify repetetive build env management tasks under posix
+# simple makefile to simplify repetitive build env management tasks under posix
 
 # caution: testing won't work on windows, see README
 
 PYTHON ?= python
 CYTHON ?= cython
-NOSETESTS ?= nosetests
+PYTEST ?= pytest
 CTAGS ?= ctags
+
+# skip doctests on 32bit python
+BITS := $(shell python -c 'import struct; print(8 * struct.calcsize("P"))')
 
 all: clean inplace test
 
@@ -18,23 +21,25 @@ clean: clean-ctags
 
 in: inplace # just a shortcut
 inplace:
-	# to avoid errors in 0.15 upgrade
-	rm -f sklearn/utils/sparsefuncs*.so
-	rm -f sklearn/utils/random*.so
 	$(PYTHON) setup.py build_ext -i
 
 test-code: in
-	$(NOSETESTS) -s -v sklearn
+	$(PYTEST) --showlocals -v sklearn --durations=20
 test-sphinxext:
-	$(NOSETESTS) -s -v doc/sphinxext/
+	$(PYTEST) --showlocals -v doc/sphinxext/
 test-doc:
-	$(NOSETESTS) -s -v doc/*.rst doc/modules/ doc/datasets/ \
-	doc/developers doc/tutorial/basic doc/tutorial/statistical_inference \
-	doc/tutorial/text_analytics
+ifeq ($(BITS),64)
+	$(PYTEST) $(shell find doc -name '*.rst' | sort)
+endif
+test-code-parallel: in
+	$(PYTEST) -n auto --showlocals -v sklearn --durations=20
 
 test-coverage:
 	rm -rf coverage .coverage
-	$(NOSETESTS) -s -v --with-coverage sklearn
+	$(PYTEST) sklearn --showlocals -v --cov=sklearn --cov-report=html:coverage
+test-coverage-parallel:
+	rm -rf coverage .coverage .coverage.*
+	$(PYTEST) sklearn -n auto --showlocals -v --cov=sklearn --cov-report=html:coverage
 
 test: test-code test-sphinxext test-doc
 
@@ -42,12 +47,12 @@ trailing-spaces:
 	find sklearn -name "*.py" -exec perl -pi -e 's/[ \t]*$$//' {} \;
 
 cython:
-	find sklearn -name "*.pyx" -exec $(CYTHON) {} \;
+	python setup.py build_src
 
 ctags:
 	# make tags for symbol based navigation in emacs and vim
 	# Install with: sudo apt-get install exuberant-ctags
-	$(CTAGS) -R *
+	$(CTAGS) --python-kinds=-i -R sklearn
 
 doc: inplace
 	$(MAKE) -C doc html
@@ -58,3 +63,6 @@ doc-noplot: inplace
 code-analysis:
 	flake8 sklearn | grep -v __init__ | grep -v external
 	pylint -E -i y sklearn/ -d E1103,E0611,E1101
+
+flake8-diff:
+	git diff upstream/main -u -- "*.py" | flake8 --diff
