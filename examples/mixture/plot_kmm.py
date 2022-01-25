@@ -74,9 +74,10 @@ if __name__ == "__main__":
 
     # ------------------------------------
     # fit GaussianMixture
-    glf = GaussianMixture(n_components=n_components, n_iter=iterations, n_init=initializations, covariance_type='full')
+    glf = GaussianMixture(n_components=n_components, n_init=initializations, covariance_type='full')
     glf.fit(X)
-    gmm_lpr, gmm_responsibilities = glf.score_samples(X)
+    # gmm_lpr = glf.score_samples(X)
+    gmm_lpr, gmm_responsibilities = glf._estimate_log_prob_resp(X)
 
     # ------------------------------------
     # Print some info
@@ -93,7 +94,7 @@ if __name__ == "__main__":
 
     print ( "GaussianMixture: responsibilities" )
     print ( gmm_responsibilities.T )
-    print ( "Mean: %s,\nCov:\n%s" % tuple(map(str, (glf.means_, glf.covars_))) )
+    print ( "Mean: %s,\nCov:\n%s" % tuple(map(str, (glf.means_, glf.covariances_))) )
 
     # ------------------------------------
     # visualize
