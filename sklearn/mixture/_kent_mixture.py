@@ -5,7 +5,8 @@ from numpy.linalg import norm as vector_norm
 #from sklearn.utils.extmath import logsumexp
 
 from ..base import BaseEstimator
-from ..utils.extmath import logsumexp, pinvh
+from scipy.special import logsumexp
+from scipy.linalg import pinvh
 
 def to_spherical_coords(X):
     X = np.asarray(X)
@@ -382,7 +383,7 @@ class KentMixture(BaseEstimator):
             # reset self.converged_ to False
             self.converged_ = False
             
-            for i in xrange(self.n_iter):
+            for i in range(self.n_iter):
                 if self.verbose_:
                     print ("----------------------")
                     print ("iteration: %d" % i)
